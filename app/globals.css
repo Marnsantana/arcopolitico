@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+:root { --ink: #14161c; --muted: #6b7280; --line: #e7e5e0; --paper: #faf9f6; --red: #dc2626; --blue: #2563eb; }
+html { background: var(--paper); color: var(--ink); }
+body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+.card { background: #fff; border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 1px 2px rgb(0 0 0 / .04), 0 8px 30px rgb(20 22 28 / .05); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 999px; padding: .65rem 1.2rem; font-weight: 600; font-size: .95rem; transition: transform .15s, background .2s, opacity .2s; }
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover { background: #2a2e38; }
+.btn-primary:disabled { opacity: .35; cursor: not-allowed; }
+.btn-ghost { border: 1px solid var(--line); background: #fff; }
+.btn-ghost:hover { background: #f4f3ef; }
+.input { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: .65rem .85rem; background: #fff; outline: none; transition: border .2s, box-shadow .2s; }
+.input:focus { border-color: #9aa3b5; box-shadow: 0 0 0 3px rgb(37 99 235 / .12); }
+.fade-in { animation: fade .45s ease both; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.marker { transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+.marker.dragging { transition: none; }
+input[type=range].arc-range { -webkit-appearance: none; appearance: none; height: 8px; border-radius: 999px; width: 100%;
+  background: linear-gradient(90deg, #dc2626, #9ca3af, #2563eb); }
+input[type=range].arc-range::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 3px solid var(--ink); box-shadow: 0 2px 6px rgb(0 0 0 / .25); }
+input[type=range].arc-range::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: #fff; border: 3px solid var(--ink); }
+input[type=range].arc-range.unset { opacity: .45; }
