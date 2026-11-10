@@ -40,6 +40,9 @@ function Panel({ token, d, c, svgRef, reload }: { token: string; d: Raw; c: Camp
   return (
     <div className="fade-in space-y-6">
       {token.startsWith("~") && <SuperTools slug={c.slug} closed={c.closed} onChange={reload} />}
+      {token.startsWith("~") && (d.participants < 5 || d.stats.some((s) => s.count < 5)) && (
+        <p className="rounded-xl bg-amber-50 p-3 text-center text-sm text-amber-800" data-testid="raw-banner">Vista de superadmin: se muestran datos con menos de 5 participantes/valoraciones. El administrador de la campaña no los ve hasta alcanzar ese mínimo.</p>
+      )}
       <div className="text-center">
         <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">Panel de administración</p>
         <h1 className="text-3xl font-extrabold tracking-tight">{c.title}</h1>

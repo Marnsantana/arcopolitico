@@ -6,7 +6,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ token: str
   const c = await adminCampaign(token);
   if (!c) return fail("Enlace de administración no válido", 404);
   const items = await itemsOf(c.id);
-  const agg = aggregate(items.map((i) => i.id), await allRatings(c.id));
+  const agg = aggregate(items.map((i) => i.id), await allRatings(c.id), true, token.startsWith("~") ? 1 : undefined); // el superadmin ve los datos sin umbral
   const { id: _id, ...pub } = c;
   void _id;
   return json({ campaign: pub, items, ...agg });

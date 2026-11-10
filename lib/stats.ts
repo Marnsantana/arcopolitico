@@ -11,10 +11,10 @@ export type ItemStats = {
 
 export type Rated = Record<string, number>;
 
-export function statsFor(id: string, all: Rated[]): ItemStats {
+export function statsFor(id: string, all: Rated[], minRatings = MIN_RATINGS): ItemStats {
   const vals = all.map((r) => r[id]).filter((v) => typeof v === "number").sort((a, b) => a - b);
   const n = vals.length;
-  if (n < MIN_RATINGS) return { id, count: n, mean: null, median: null, histogram: null };
+  if (n < minRatings) return { id, count: n, mean: null, median: null, histogram: null };
   const mean = vals.reduce((a, b) => a + b, 0) / n;
   const median = n % 2 ? vals[(n - 1) / 2] : (vals[n / 2 - 1] + vals[n / 2]) / 2;
   const histogram = Array(10).fill(0);
@@ -23,13 +23,14 @@ export function statsFor(id: string, all: Rated[]): ItemStats {
 }
 
 /** `unlocked`: la campaña permite ya publicar resultados (modo de visibilidad). El mínimo de privacidad se aplica siempre. */
-export function aggregate(itemIds: string[], all: Rated[], unlocked = true) {
+/** `floor`: mínimo de privacidad (participantes y valoraciones por elemento). Solo el superadmin usa un valor menor que 5. */
+export function aggregate(itemIds: string[], all: Rated[], unlocked = true, floor = MIN_PARTICIPANTS) {
   const participants = all.length;
-  const available = unlocked && participants >= MIN_PARTICIPANTS;
+  const available = unlocked && participants >= floor;
   return {
     participants,
     available,
-    min: MIN_PARTICIPANTS,
-    stats: available ? itemIds.map((id) => statsFor(id, all)) : [],
+    min: floor,
+    stats: available ? itemIds.map((id) => statsFor(id, all, floor)) : [],
   };
 }
