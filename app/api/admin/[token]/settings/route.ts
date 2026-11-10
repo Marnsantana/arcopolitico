@@ -1,10 +1,10 @@
 import { db } from "@/lib/db";
 import { settingsSchema } from "@/lib/schemas";
-import { campaignBy, fail, json, readJson, sha } from "@/lib/server";
+import { adminCampaign, fail, json, readJson } from "@/lib/server";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const c = await campaignBy("admin_hash", sha(token));
+  const c = await adminCampaign(token);
   if (!c) return fail("Enlace de administración no válido", 404);
   if (c.closed) return fail("La campaña está cerrada.", 403);
   const p = settingsSchema.safeParse(await readJson(req, 2_000));

@@ -10,6 +10,10 @@ npm run dev
 npm test        # prueba de humo de la API (servidor en marcha): node scripts/smoke.mjs [URL]
 ```
 
+## Variables de entorno
+- `DATABASE_URL`: Postgres (Neon/Supabase). El esquema se aplica solo en el build (`scripts/migrate.mjs`).
+- `SUPERADMIN_PASSWORD`: contraseña del panel `/super` (mín. 8 caracteres). Sin ella, el panel está desactivado.
+
 ## Estructura
 - `app/` páginas (`/`, `/c/[slug]`, `/admin/[token]`) y API (`app/api`).
 - `components/Arc.tsx` arco interactivo (arrastre + sliders sincronizados).

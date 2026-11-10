@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { db } from "./db";
 import { MIN_PARTICIPANTS } from "./stats";
+import { isSuper } from "./super";
 
 export const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 export const token = (bytes: number) => randomBytes(bytes).toString("base64url");
@@ -67,4 +68,10 @@ export function collectiveUnlocked(c: Campaign, participants: number): boolean {
   if (c.results_mode === "on_close") return c.closed;
   if (c.results_mode === "after_votes") return c.closed || participants >= c.results_min;
   return true;
+}
+
+/** Campaña a administrar: por token privado, o por "~slug" si hay sesión de superadmin. */
+export async function adminCampaign(token: string): Promise<Campaign | null> {
+  if (token.startsWith("~")) return (await isSuper()) ? campaignBy("slug", token.slice(1)) : null;
+  return campaignBy("admin_hash", sha(token));
 }

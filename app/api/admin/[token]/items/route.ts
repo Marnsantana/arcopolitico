@@ -1,11 +1,11 @@
 import { db } from "@/lib/db";
 import { itemsSchema } from "@/lib/schemas";
-import { campaignBy, fail, itemsOf, json, readJson, sha } from "@/lib/server";
+import { adminCampaign, fail, itemsOf, json, readJson } from "@/lib/server";
 
 /** Sustituye la lista de elementos de la campaña (editar, añadir, quitar, reordenar). Solo con la campaña abierta. */
 export async function PUT(req: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const c = await campaignBy("admin_hash", sha(token));
+  const c = await adminCampaign(token);
   if (!c) return fail("Enlace de administración no válido", 404);
   if (c.closed) return fail("La campaña está cerrada: los elementos ya no se pueden modificar.", 403);
   const p = itemsSchema.safeParse(await readJson(req));

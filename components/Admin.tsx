@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Arc, ArcItem } from "./Arc";
 import { CopyField, Qr, Stat, StatsTable } from "./Bits";
 import ItemsEditor from "./ItemsEditor";
+import SuperTools from "./SuperTools";
 import { Mode, ResultsSettings, describeMode } from "./ResultsMode";
 import { api, downloadSvgAsPng } from "@/lib/client";
 
@@ -17,7 +18,7 @@ export default function Admin({ token }: { token: string }) {
   const load = useCallback(() => api<Raw>(`/api/admin/${token}`).then(setD).catch((e) => setError(e.message)), [token]);
   useEffect(() => { load(); }, [load]);
 
-  if (error) return <p className="card mx-auto mt-10 max-w-md p-6 text-center">{error}</p>;
+  if (error) return <p className="card mx-auto mt-10 max-w-md p-6 text-center">{error}{token.startsWith("~") && <> <a className="underline" href="/super">Entrar como superadmin</a></>}</p>;
   if (!d) return <p className="mt-20 text-center text-gray-500">Cargando…</p>;
 
   const c = d.campaign;
@@ -38,6 +39,7 @@ function Panel({ token, d, c, svgRef, reload }: { token: string; d: Raw; c: Camp
 
   return (
     <div className="fade-in space-y-6">
+      {token.startsWith("~") && <SuperTools slug={c.slug} closed={c.closed} onChange={reload} />}
       <div className="text-center">
         <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">Panel de administración</p>
         <h1 className="text-3xl font-extrabold tracking-tight">{c.title}</h1>
