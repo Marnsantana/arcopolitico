@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Arc, ArcItem } from "./Arc";
 import { CopyField, Qr, Stat, StatsTable } from "./Bits";
+import ItemsEditor from "./ItemsEditor";
 import { api, downloadSvgAsPng } from "@/lib/client";
 
 type Camp = { slug: string; title: string; description: string | null; closes_at: string | null; closed: boolean };
@@ -64,6 +65,8 @@ function Panel({ token, d, c, svgRef, reload }: { token: string; d: Raw; c: Camp
           <p className="py-14 text-center text-gray-600" data-testid="locked">Los resultados se mostrarán con al menos {d.min} participantes ({d.participants} de {d.min}).</p>
         )}
       </div>
+
+      {!c.closed && <ItemsEditor key={d.items.map((i) => i.id + i.name + i.kind + (i.photo?.length ?? 0)).join("|")} token={token} items={d.items} participants={d.participants} onSaved={reload} />}
 
       {hasStats && <div className="card p-4 sm:p-6"><h2 className="mb-2 font-bold">Estadísticas</h2><StatsTable items={d.items} stats={stats} /></div>}
     </div>

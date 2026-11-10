@@ -78,7 +78,7 @@ export default function Create() {
                   try { set(r.key, { photo: await resizePhoto(f) }); } catch (er) { setError((er as Error).message); }
                 }} />
               </label>
-              <input className="input min-w-0 flex-1" placeholder="Nombre" maxLength={60} value={r.name} onChange={(e) => set(r.key, { name: e.target.value })} />
+              <input className="input w-auto min-w-0 flex-1 basis-40" placeholder="Nombre" maxLength={60} value={r.name} onChange={(e) => set(r.key, { name: e.target.value })} />
               <select className="input w-auto" value={r.kind} onChange={(e) => set(r.key, { kind: e.target.value as Row["kind"] })}>
                 <option value="party">Partido</option><option value="person">Persona</option>
               </select>
@@ -88,7 +88,7 @@ export default function Create() {
           ))}
         </div>
         {rows.length < 24 && <button className="btn btn-ghost mt-3" onClick={() => setRows((r) => [...r, blank()])}>+ Añadir elemento</button>}
-        <p className="mt-2 text-xs text-gray-500">Mínimo 2 elementos. Una vez publicada, la lista queda bloqueada. Toca el círculo para añadir foto (si no, se usan las iniciales).</p>
+        <p className="mt-2 text-xs text-gray-500">Mínimo 2 elementos. Después podrás editarlos desde el panel de administración. Toca el círculo para añadir foto (si no, se usan las iniciales).</p>
       </div>
 
       {error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{error}</p>}

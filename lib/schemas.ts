@@ -17,3 +17,13 @@ export const createSchema = z.object({
 export const respondSchema = z.object({
   ratings: z.record(z.string().uuid(), z.number().min(0).max(100)),
 });
+
+// Edición de elementos desde el panel: `photo` ausente = conservar, null = quitar, string = nueva foto.
+export const itemsSchema = z.object({
+  items: z.array(z.object({
+    id: z.string().uuid().optional(),
+    name: z.string().trim().min(1).max(60),
+    kind: z.enum(["party", "person"]),
+    photo,
+  })).min(2).max(24),
+});

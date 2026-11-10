@@ -59,8 +59,8 @@ export function downloadSvgAsPng(svg: SVGSVGElement, filename: string) {
   img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
 }
 
-export async function api<T>(url: string, body?: unknown): Promise<T> {
-  const r = await fetch(url, body === undefined ? undefined : { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+export async function api<T>(url: string, body?: unknown, method = "POST"): Promise<T> {
+  const r = await fetch(url, body === undefined ? undefined : { method, headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(d.error || "Error inesperado");
   return d as T;
