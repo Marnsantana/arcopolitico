@@ -22,9 +22,10 @@ export function statsFor(id: string, all: Rated[]): ItemStats {
   return { id, count: n, mean: Math.round(mean * 10) / 10, median: Math.round(median * 10) / 10, histogram };
 }
 
-export function aggregate(itemIds: string[], all: Rated[]) {
+/** `unlocked`: la campaña permite ya publicar resultados (modo de visibilidad). El mínimo de privacidad se aplica siempre. */
+export function aggregate(itemIds: string[], all: Rated[], unlocked = true) {
   const participants = all.length;
-  const available = participants >= MIN_PARTICIPANTS;
+  const available = unlocked && participants >= MIN_PARTICIPANTS;
   return {
     participants,
     available,

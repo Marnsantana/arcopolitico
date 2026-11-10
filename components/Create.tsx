@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Avatar } from "./Arc";
 import { CopyField, Qr } from "./Bits";
 import { api, resizePhoto } from "@/lib/client";
+import { Mode, ResultsModePicker } from "./ResultsMode";
 
 type Row = { key: number; name: string; kind: "party" | "person"; photo: string | null };
 let k = 0;
@@ -13,6 +14,8 @@ export default function Create() {
   const [description, setDescription] = useState("");
   const [closesAt, setClosesAt] = useState("");
   const [rows, setRows] = useState<Row[]>([blank(), blank()]);
+  const [mode, setMode] = useState<Mode>("on_vote");
+  const [minVotes, setMinVotes] = useState(10);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState<{ pub: string; admin: string } | null>(null);
@@ -26,6 +29,7 @@ export default function Create() {
       const res = await api<{ slug: string; adminToken: string }>("/api/campaigns", {
         title, description: description || null,
         closesAt: closesAt ? new Date(closesAt).toISOString() : null,
+        resultsMode: mode, resultsMin: minVotes,
         items: rows.filter((r) => r.name.trim()).map(({ name, kind, photo }) => ({ name, kind, photo })),
       });
       setDone({ pub: `${location.origin}/c/${res.slug}`, admin: `${location.origin}/admin/${res.adminToken}` });
@@ -90,6 +94,8 @@ export default function Create() {
         {rows.length < 24 && <button className="btn btn-ghost mt-3" onClick={() => setRows((r) => [...r, blank()])}>+ Añadir elemento</button>}
         <p className="mt-2 text-xs text-gray-500">Mínimo 2 elementos. Después podrás editarlos desde el panel de administración. Toca el círculo para añadir foto (si no, se usan las iniciales).</p>
       </div>
+
+      <ResultsModePicker mode={mode} min={minVotes} onChange={(m, n) => { setMode(m); setMinVotes(n); }} />
 
       {error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700" role="alert">{error}</p>}
       <button className="btn btn-primary w-full" disabled={!valid || busy} onClick={publish}>{busy ? "Publicando…" : "Publicar campaña"}</button>

@@ -7,7 +7,9 @@ create table if not exists campaigns (
   description text,
   closes_at timestamptz,
   closed_at timestamptz,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  results_mode text not null default 'on_vote' check (results_mode in ('on_vote','after_votes','on_close')),
+  results_min int not null default 5 check (results_min between 5 and 1000)
 );
 create table if not exists items (
   id uuid primary key default gen_random_uuid(),
@@ -25,6 +27,9 @@ create table if not exists responses (
   updated_at timestamptz not null default now(),
   primary key (campaign_id, voter_hash)
 );
+-- Bases de datos creadas antes de esta opción:
+alter table campaigns add column if not exists results_mode text not null default 'on_vote' check (results_mode in ('on_vote','after_votes','on_close'));
+alter table campaigns add column if not exists results_min int not null default 5 check (results_min between 5 and 1000);
 create index if not exists items_campaign_idx on items(campaign_id, position);
 alter table campaigns enable row level security;
 alter table items enable row level security;

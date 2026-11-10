@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { aggregate } from "@/lib/stats";
-import { allRatings, campaignBy, fail, itemsOf, json, voterHash } from "@/lib/server";
+import { allRatings, campaignBy, collectiveUnlocked, fail, itemsOf, json, voterHash } from "@/lib/server";
 
 export async function GET(_: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -11,6 +11,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ slug: stri
   // Solo quien ya ha enviado su valoración puede ver resultados.
   if (!rows[0]) return fail("Envía tu valoración para ver los resultados.", 403);
   const items = await itemsOf(c.id);
-  const agg = aggregate(items.map((i) => i.id), await allRatings(c.id));
-  return json({ mine: rows[0].ratings, ...agg });
+  const all = await allRatings(c.id);
+  const agg = aggregate(items.map((i) => i.id), all, collectiveUnlocked(c, all.length));
+  return json({ mine: rows[0].ratings, ...agg, mode: c.results_mode, needed: c.results_min });
 }

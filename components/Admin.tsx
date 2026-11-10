@@ -3,9 +3,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Arc, ArcItem } from "./Arc";
 import { CopyField, Qr, Stat, StatsTable } from "./Bits";
 import ItemsEditor from "./ItemsEditor";
+import { Mode, ResultsSettings, describeMode } from "./ResultsMode";
 import { api, downloadSvgAsPng } from "@/lib/client";
 
-type Camp = { slug: string; title: string; description: string | null; closes_at: string | null; closed: boolean };
+type Camp = { slug: string; title: string; description: string | null; closes_at: string | null; closed: boolean; results_mode: Mode; results_min: number };
 type Raw = { campaign: Camp; items: ArcItem[]; participants: number; available: boolean; min: number; stats: Stat[] };
 
 export default function Admin({ token }: { token: string }) {
@@ -65,6 +66,8 @@ function Panel({ token, d, c, svgRef, reload }: { token: string; d: Raw; c: Camp
           <p className="py-14 text-center text-gray-600" data-testid="locked">Los resultados se mostrarán con al menos {d.min} participantes ({d.participants} de {d.min}).</p>
         )}
       </div>
+
+      {c.closed ? <p className="text-center text-sm text-gray-500">{describeMode(c.results_mode, c.results_min)}</p> : <ResultsSettings key={c.results_mode + c.results_min} token={token} mode={c.results_mode} min={c.results_min} onSaved={reload} />}
 
       {!c.closed && <ItemsEditor key={d.items.map((i) => i.id + i.name + i.kind + (i.photo?.length ?? 0)).join("|")} token={token} items={d.items} participants={d.participants} onSaved={reload} />}
 

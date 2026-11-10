@@ -4,8 +4,8 @@ import { Arc, ArcItem, Avatar } from "./Arc";
 import { StatsTable, Stat } from "./Bits";
 import { api, downloadSvgAsPng } from "@/lib/client";
 
-type Info = { campaign: { slug: string; title: string; description: string | null; closes_at: string | null; closed: boolean }; items: ArcItem[]; mine: Record<string, number> | null };
-type Results = { mine: Record<string, number>; participants: number; available: boolean; min: number; stats: Stat[] };
+type Info = { campaign: { slug: string; title: string; description: string | null; closes_at: string | null; closed: boolean; results_mode: "on_vote" | "after_votes" | "on_close"; results_min: number }; items: ArcItem[]; mine: Record<string, number> | null };
+type Results = { mine: Record<string, number>; participants: number; available: boolean; min: number; stats: Stat[]; mode: "on_vote" | "after_votes" | "on_close"; needed: number };
 type Tab = "mine" | "collective" | "compare";
 
 export default function Participate({ slug }: { slug: string }) {
@@ -80,7 +80,11 @@ export default function Participate({ slug }: { slug: string }) {
           {tab !== "mine" && locked ? (
             <div className="py-16 text-center" data-testid="locked">
               <p className="text-lg font-semibold">Resultados colectivos aún no disponibles</p>
-              <p className="mt-1 text-gray-600">Se mostrarán cuando haya al menos {results.min} participantes ({results.participants} de {results.min} hasta ahora).</p>
+              <p className="mt-1 text-gray-600">
+                {results.mode === "on_close" ? `Se mostrarán cuando termine la campaña (y haya al menos ${results.min} participantes; ahora hay ${results.participants}).`
+                  : results.mode === "after_votes" ? `Se mostrarán al llegar a ${Math.max(results.needed, results.min)} participantes (ahora ${results.participants}) o cuando termine la campaña.`
+                  : `Se mostrarán cuando haya al menos ${results.min} participantes (${results.participants} de ${results.min} hasta ahora).`}
+              </p>
             </div>
           ) : (
             <Arc svgRef={svgRef} items={items}
@@ -103,7 +107,7 @@ export default function Participate({ slug }: { slug: string }) {
           </div>
         )}
         {tab === "mine" && !locked && <p className="mt-4 text-center text-sm text-gray-500">{results.participants} participantes · mira el arco colectivo o compara.</p>}
-        {tab === "mine" && locked && <p className="mt-4 text-center text-sm text-gray-500">Participantes: {results.participants}. El arco colectivo se desbloquea con {results.min}.</p>}
+        {tab === "mine" && locked && <p className="mt-4 text-center text-sm text-gray-500">Participantes: {results.participants}. El arco colectivo aún no está disponible.</p>}
       </div>
     );
   }
@@ -137,6 +141,7 @@ export default function Participate({ slug }: { slug: string }) {
         <button className="btn btn-primary" disabled={!rated || busy} onClick={submit} data-testid="submit">
           {busy ? "Enviando…" : info.mine ? "Guardar cambios" : "Enviar valoración"}
         </button>
+        <p className="mt-2 text-xs text-gray-500">{campaign.results_mode === "on_vote" ? "" : campaign.results_mode === "on_close" ? "Los resultados colectivos se publicarán al cerrar la campaña. " : `Los resultados colectivos se publicarán al llegar a ${campaign.results_min} participantes o al cerrar la campaña. `}</p>
         <p className="mt-2 text-xs text-gray-500">{rated ? `${rated} de ${items.length} valorados` : "Posiciona al menos un elemento para enviar"} · Puedes dejar elementos sin valorar</p>
         {info.mine && <button className="mt-2 block w-full text-sm text-gray-500 underline" onClick={() => setPhase("results")}>Volver a los resultados</button>}
       </div>

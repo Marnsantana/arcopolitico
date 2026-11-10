@@ -14,8 +14,8 @@ export async function POST(req: Request) {
   try {
     await client.query("begin");
     const { rows } = await client.query(
-      "insert into campaigns (slug, admin_hash, title, description, closes_at) values ($1,$2,$3,$4,$5) returning id",
-      [slug, sha(admin), d.title, d.description || null, d.closesAt || null],
+      "insert into campaigns (slug, admin_hash, title, description, closes_at, results_mode, results_min) values ($1,$2,$3,$4,$5,$6,$7) returning id",
+      [slug, sha(admin), d.title, d.description || null, d.closesAt || null, d.resultsMode, d.resultsMin],
     );
     for (let i = 0; i < d.items.length; i++) {
       const it = d.items[i];
